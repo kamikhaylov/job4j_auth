@@ -24,6 +24,7 @@ import ru.job4j.validation.PersonResponseValidator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -65,7 +66,7 @@ public class PersonController {
 
     /** Создать пользователя */
     @PostMapping("/create")
-    public ResponseEntity<PersonResponseDto> create(@RequestBody PersonRequestDto person) {
+    public ResponseEntity<PersonResponseDto> create(@Valid @RequestBody PersonRequestDto person) {
         validator.validateAndThrow(person);
         Optional<PersonResponseDto> result = personService.create(person);
         return new ResponseEntity<>(result.isPresent() ? HttpStatus.CREATED : HttpStatus.CONFLICT);
@@ -73,7 +74,7 @@ public class PersonController {
 
     /** Обновить пользователя */
     @PatchMapping("/update")
-    public ResponseEntity<String> update(@RequestBody PersonRequestDto person) {
+    public ResponseEntity<String> update(@Valid @RequestBody PersonRequestDto person) {
         validator.validateAndThrow(person);
         if (!personService.update(person)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, P0004.toString());

@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * ДТО запроса пользователь
  */
@@ -18,8 +20,10 @@ public class PersonRequestDto {
     private int id;
 
     /** Логин */
+    @NotBlank(message = "Не заполнен логин")
     private String login;
 
     /** Пароль */
+    @NotBlank(message = "Не заполнен пароль")
     private String password;
 }

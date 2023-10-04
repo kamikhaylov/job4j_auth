@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 
 /**
  * Модель пользователя
@@ -31,8 +32,10 @@ public class Person {
     private int id;
 
     /** Логин */
+    @NotBlank(message = "Не заполнен логин")
     private String login;
 
     /** Пароль */
+    @NotBlank(message = "Не заполнен пароль")
     private String password;
 }
