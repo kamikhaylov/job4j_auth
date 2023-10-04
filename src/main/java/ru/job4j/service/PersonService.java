@@ -3,6 +3,11 @@ package ru.job4j.service;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.job4j.model.Person;
 import ru.job4j.repository.api.PersonRepository;
@@ -10,6 +15,8 @@ import ru.job4j.repository.api.PersonRepository;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Collections.emptyList;
+import static java.util.Objects.isNull;
 import static ru.job4j.logging.PersonLogEvent.P0001;
 import static ru.job4j.logging.PersonLogEvent.P0002;
 import static ru.job4j.logging.PersonLogEvent.P0003;
@@ -19,11 +26,12 @@ import static ru.job4j.logging.PersonLogEvent.P0003;
  */
 @Service
 @AllArgsConstructor
-public class PersonService {
+public class PersonService implements UserDetailsService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PersonService.class.getName());
 
     private final PersonRepository personRepository;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * Найти всех пользователей.
@@ -51,6 +59,7 @@ public class PersonService {
      * @return пользователь
      */
     public Optional<Person> create(Person person) {
+        person.setPassword(passwordEncoder.encode(person.getPassword()));
         Optional<Person> result = Optional.empty();
         try {
             result = Optional.of(personRepository.save(person));
@@ -104,5 +113,14 @@ public class PersonService {
         }
 
         return result;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
+        Person user = personRepository.findByLogin(login);
+        if (isNull(user)) {
+            throw new UsernameNotFoundException(login);
+        }
+        return new User(user.getLogin(), user.getPassword(), emptyList());
     }
 }

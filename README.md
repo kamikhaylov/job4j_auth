@@ -44,6 +44,9 @@
 #### http://localhost:8080/person/delete/{id}
 ![delete.png](readme/image/delete.png)
 
+#### http://localhost:8080/login
+![login.png](readme/image/login.png)
+
 ### Контакты
 kanmikhaylov@gmail.com
 
