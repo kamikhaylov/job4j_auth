@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static ru.job4j.logging.PersonLogEvent.P0004;
+import static ru.job4j.logging.PersonLogEvent.P0008;
+import static ru.job4j.logging.PersonLogEvent.P0009;
 
 /**
  * Контроллер пользователей
@@ -72,21 +74,25 @@ public class PersonController {
 
     /** Обновить пользователя */
     @PutMapping("/update")
-    public ResponseEntity<Void> update(@RequestBody Person person) {
+    public ResponseEntity<String> update(@RequestBody Person person) {
         validator.validateAndThrow(person);
         if (!personService.update(person)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, P0004.toString());
         }
-        return ResponseEntity.ok().build();
+        return ResponseEntity
+                        .status(HttpStatus.OK)
+                        .body(P0008.toString());
     }
 
     /** Удалить пользователя по id */
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> delete(@PathVariable int id) {
+    public ResponseEntity<String> delete(@PathVariable int id) {
         if (!personService.delete(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, P0004.toString());
         }
-        return ResponseEntity.ok().build();
+        return ResponseEntity
+                       .status(HttpStatus.OK)
+                       .body(P0009.toString());
     }
 
     /** Обработка исключения */
