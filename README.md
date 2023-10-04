@@ -47,6 +47,9 @@
 #### http://localhost:8080/login
 ![login.png](readme/image/login.png)
 
+#### Не пройдена валидация
+![validate.png](readme/image/validate.png)
+
 ### Контакты
 kanmikhaylov@gmail.com
 
