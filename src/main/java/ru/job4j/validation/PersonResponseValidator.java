@@ -2,7 +2,7 @@ package ru.job4j.validation;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-import ru.job4j.model.Person;
+import ru.job4j.dto.request.PersonRequestDto;
 
 import static java.util.Objects.isNull;
 import static ru.job4j.logging.PersonLogEvent.P0005;
@@ -15,7 +15,7 @@ import static ru.job4j.logging.PersonLogEvent.P0007;
 @Component
 public class PersonResponseValidator {
 
-    public void validateAndThrow(Person person) {
+    public void validateAndThrow(PersonRequestDto person) {
         if (isNull(person)) {
             throw new NullPointerException(P0005.toString());
         }

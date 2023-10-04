@@ -9,11 +9,15 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.job4j.dto.request.PersonRequestDto;
+import ru.job4j.dto.response.PersonResponseDto;
+import ru.job4j.mapper.Mapper;
 import ru.job4j.model.Person;
 import ru.job4j.repository.api.PersonRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
@@ -32,14 +36,19 @@ public class PersonService implements UserDetailsService {
 
     private final PersonRepository personRepository;
     private final PasswordEncoder passwordEncoder;
+    private final Mapper<PersonRequestDto, Person> personRequestMapper;
+    private final Mapper<Person, PersonResponseDto> personResponseMapper;
 
     /**
      * Найти всех пользователей.
      *
      * @return список пользователей
      */
-    public List<Person> findAll() {
-        return personRepository.findAll();
+    public List<PersonResponseDto> findAll() {
+        List<Person> personList = personRepository.findAll();
+        return personList.stream()
+                       .map(personResponseMapper::map)
+                       .collect(Collectors.toList());
     }
 
     /**
@@ -48,21 +57,23 @@ public class PersonService implements UserDetailsService {
      * @param id идентификатор пользователя
      * @return пользователь
      */
-    public Optional<Person> findById(int id) {
-        return personRepository.findById(id);
+    public Optional<PersonResponseDto> findById(int id) {
+        Optional<Person> person = personRepository.findById(id);
+        return person.map(personResponseMapper::map);
     }
 
     /**
      * Создать пользователя.
      *
-     * @param person пользователь
+     * @param personRequestDto пользователь
      * @return пользователь
      */
-    public Optional<Person> create(Person person) {
+    public Optional<PersonResponseDto> create(PersonRequestDto personRequestDto) {
+        Person person = personRequestMapper.map(personRequestDto);
         person.setPassword(passwordEncoder.encode(person.getPassword()));
-        Optional<Person> result = Optional.empty();
+        Optional<PersonResponseDto> result = Optional.empty();
         try {
-            result = Optional.of(personRepository.save(person));
+            result = Optional.of(personResponseMapper.map(personRepository.save(person)));
         } catch (Exception ex) {
             LOGGER.error(P0001.toString(), ex);
         }
@@ -72,11 +83,12 @@ public class PersonService implements UserDetailsService {
     /**
      * Обновить пользователя.
      *
-     * @param person пользователь
+     * @param personRequestDto пользователь
      * @return результат обновления, true - обновлен, false - нет
      */
-    public boolean update(Person person) {
+    public boolean update(PersonRequestDto personRequestDto) {
         boolean result = false;
+        Person person = personRequestMapper.map(personRequestDto);
         Optional<Person> personFound = personRepository.findById(person.getId());
 
         if (personFound.isPresent()) {

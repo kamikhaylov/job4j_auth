@@ -17,7 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-import ru.job4j.model.Person;
+import ru.job4j.dto.request.PersonRequestDto;
+import ru.job4j.dto.response.PersonResponseDto;
 import ru.job4j.service.PersonService;
 import ru.job4j.validation.PersonResponseValidator;
 
@@ -49,14 +50,14 @@ public class PersonController {
 
     /** Получить список пользователей */
     @GetMapping("/list")
-    public List<Person> findAll() {
+    public List<PersonResponseDto> findAll() {
         return this.personService.findAll();
     }
 
     /** Получить пользователя по id */
     @GetMapping("/{id}")
-    public ResponseEntity<Person> findById(@PathVariable int id) {
-        Optional<Person> person = personService.findById(id);
+    public ResponseEntity<PersonResponseDto> findById(@PathVariable int id) {
+        Optional<PersonResponseDto> person = personService.findById(id);
         return new ResponseEntity<>(
                 person.orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, P0004.toString())), HttpStatus.OK);
@@ -64,17 +65,15 @@ public class PersonController {
 
     /** Создать пользователя */
     @PostMapping("/create")
-    public ResponseEntity<Person> create(@RequestBody Person person) {
+    public ResponseEntity<PersonResponseDto> create(@RequestBody PersonRequestDto person) {
         validator.validateAndThrow(person);
-        Optional<Person> result = personService.create(person);
-        return new ResponseEntity<>(
-                result.orElse(person),
-                result.isPresent() ? HttpStatus.CREATED : HttpStatus.CONFLICT);
+        Optional<PersonResponseDto> result = personService.create(person);
+        return new ResponseEntity<>(result.isPresent() ? HttpStatus.CREATED : HttpStatus.CONFLICT);
     }
 
     /** Обновить пользователя */
     @PutMapping("/update")
-    public ResponseEntity<String> update(@RequestBody Person person) {
+    public ResponseEntity<String> update(@RequestBody PersonRequestDto person) {
         validator.validateAndThrow(person);
         if (!personService.update(person)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, P0004.toString());
