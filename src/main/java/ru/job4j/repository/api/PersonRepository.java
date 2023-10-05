@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import ru.job4j.model.Person;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Репозиторий для взаимодействия с таблицей person
@@ -21,5 +22,5 @@ public interface PersonRepository extends CrudRepository<Person, Integer> {
      */
     List<Person> findAll();
 
-    Person findByLogin(String login);
+    Optional<Person> findByLogin(String login);
 }

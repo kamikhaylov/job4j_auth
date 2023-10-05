@@ -20,7 +20,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
-import static java.util.Objects.isNull;
 import static ru.job4j.logging.PersonLogEvent.P0001;
 import static ru.job4j.logging.PersonLogEvent.P0002;
 import static ru.job4j.logging.PersonLogEvent.P0003;
@@ -129,10 +128,10 @@ public class PersonService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        Person user = personRepository.findByLogin(login);
-        if (isNull(user)) {
+        Optional<Person> person = personRepository.findByLogin(login);
+        if (person.isEmpty()) {
             throw new UsernameNotFoundException(login);
         }
-        return new User(user.getLogin(), user.getPassword(), emptyList());
+        return new User(person.get().getLogin(), person.get().getPassword(), emptyList());
     }
 }
